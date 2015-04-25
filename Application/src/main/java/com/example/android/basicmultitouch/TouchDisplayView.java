@@ -41,12 +41,7 @@ public class TouchDisplayView extends View {
     // Is there an active touch?
     private boolean mHasTouch = false;
 
-    /**
-     * Holds data related to a touch pointer, including its current position,
-     * pressure and historical positions. Objects are allocated through an
-     * object pool using {@link #obtain()} and {@link #recycle()} to reuse
-     * existing objects.
-     */
+
     static final class TouchHistory {
 
         // number of historical points to store
@@ -70,9 +65,7 @@ public class TouchDisplayView extends View {
 
         public static TouchHistory obtain(float x, float y, float pressure) {
             TouchHistory data = sPool.acquire();
-            if (data == null) {
-                data = new TouchHistory();
-            }
+            if (data == null) data = new TouchHistory();
 
             data.setTouch(x, y, pressure);
 
@@ -99,12 +92,7 @@ public class TouchDisplayView extends View {
             sPool.release(this);
         }
 
-        /**
-         * Add a point to its history. Overwrites oldest point if the maximum
-         * number of historical points is already stored.
-         *
-         * @param point
-         */
+
         public void addHistory(float x, float y) {
             PointF p = history[historyIndex];
             p.x = x;
@@ -134,32 +122,18 @@ public class TouchDisplayView extends View {
 
         final int action = event.getAction();
 
-        /*
-         * Switch on the action. The action is extracted from the event by
-         * applying the MotionEvent.ACTION_MASK. Alternatively a call to
-         * event.getActionMasked() would yield in the action as well.
-         */
+
         switch (action & MotionEvent.ACTION_MASK) {
 
             case MotionEvent.ACTION_DOWN: {
-                // first pressed gesture has started
 
-                /*
-                 * Only one touch event is stored in the MotionEvent. Extract
-                 * the pointer identifier of this touch from the first index
-                 * within the MotionEvent object.
-                 */
                 int id = event.getPointerId(0);
 
                 TouchHistory data = TouchHistory.obtain(event.getX(0), event.getY(0),
                         event.getPressure(0));
                 data.label = "x= " + event.getX(0);
 
-                /*
-                 * Store the data under its pointer identifier. The pointer
-                 * number stays consistent for the duration of a gesture,
-                 * accounting for other pointers going up or down.
-                 */
+
                 mTouches.put(id, data);
 
                 mHasTouch = true;
